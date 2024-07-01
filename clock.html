@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Hello world</title>
+        <!-- Script tags including React -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.1/react-dom.min.js"></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        <link href="https://gist.githubusercontent.com/auser/2bc34b9abf07f34f602dccd6ca855df1/raw/070d6cd5b4d4ec1a3e6892d43e877039a91a9108/timeline.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <body>
+        <div id="app"></div>
+        <script type="text/babel">
+            const mount = document.querySelector('#app');
+
+                class Clock extends React.Component{
+                    constructor(props){
+                        super(props);
+                        this.state = this.getTime();
+                    }
+
+                    setTimer(){
+                        clearTimeout(this.timeout);
+                        this.timeout = setTimeout(this.updateClock.bind(this), 1000);
+                    }
+
+
+                    updateClock() {
+                        this.setState(this.getTime());
+                        this.setTimer();
+                    }
+                    
+                    getTime(){
+                        const currentTime = new Date,
+                        hours = currentTime.getHours(),
+                        minutes = currentTime.getMinutes(),
+                        seconds = currentTime.getSeconds(),
+                        ampm = hours > 12 ? 'pm' : 'am';
+                        return {hours, minutes, seconds, ampm};
+                    }
+
+                    componentDidMount() {
+                        this.setTimer();
+                    }
+
+                    componentWillUnmount() {
+                        clearTimeout(this.timeout);
+                    }
+
+                    render(){
+                        
+                        const {hours, minutes, seconds, ampm } = this.state;
+                            return  (
+                                <div className = "clock">
+                                    {hours == 0 ? 12 :  hours > 12 ? hours - 12 : hours}: 
+                                    {('00' + minutes).slice(-2) }:
+                                    {('00' + seconds).slice(-2) }:
+                                    {ampm}
+                                    </div>
+                            );
+                        }
+                }
+                             
+                        
+                ReactDOM.render(<Clock />, mount);
+        </script>
+    </body>
+</html>
