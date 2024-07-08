@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Search</title>
+        <!-- Script tags including React -->
+        <!-- <script src="./js/react.min.js"></script>
+        <script src="./js/react-dom.min.js"></script>
+        <script src="./js/babel.min.js"></script> -->
+
+        <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    </head>
+
+    <body>
+        <div id="app"></div>
+        <script type="text/babel">
+            const mount = document.querySelector('#app');
+            class SearchBarToggle extends React.Component{ 
+                constructor(props){
+                    super(props);
+
+                    this.state = { 
+                        visibility: true
+                    }
+
+                    this.toggleVisibility = this.toggleVisibility.bind(this);
+                }
+                
+                toggleVisbility(){ 
+                    this.setState({
+                        visibility: !this.state.visibility
+                    });
+                }
+                
+                render(){ 
+                    const searchInputClasses = ["searchInput"];
+
+                    return (
+                        <div className="header">
+                            <div className="fa fa-more"></div>
+                                <span className="title">
+                                    "Title Goes here"
+                                    ReactDOM.render(<SearchBarToggle />, mount);  </span>
+                                <input
+                                    type="text"
+                                    className={searchInputClasses.join(' ')}
+                                    placeholder="Search ..." 
+                                />
+                            <div onClick = {this.toggleVisbility.bind(this)} className="fa fa-search searchIcon"></div>
+                            </div>
+                    );
+                }
+
+            }
+
+            
+            ReactDOM.render(<SearchBarToggle />, mount);
+        </script>
+    </body>
+</html>
