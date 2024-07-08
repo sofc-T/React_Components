@@ -11,6 +11,8 @@
         <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
         <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
         <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     </head>
 
     <body>
@@ -22,33 +24,43 @@
                     super(props);
 
                     this.state = { 
-                        visibility: true
+                        visibility: false
                     }
 
                     this.toggleVisibility = this.toggleVisibility.bind(this);
+                    
                 }
                 
-                toggleVisbility(){ 
+                toggleVisibility(){ 
+                    console.log("toggled");
+                    console.log(this.state.visibility);
                     this.setState({
                         visibility: !this.state.visibility
                     });
+                    console.log(this.state.visibility);
                 }
                 
                 render(){ 
                     const searchInputClasses = ["searchInput"];
 
+                    if (this.state.visibility) {
+                        searchInputClasses.push("active");
+                    }
+                    
+                    let displayStyle = this.state.visibility ? 'block' : 'none';
                     return (
-                        <div className="header">
+                        <div className="header" >
                             <div className="fa fa-more"></div>
                                 <span className="title">
-                                    "Title Goes here"
-                                    ReactDOM.render(<SearchBarToggle />, mount);  </span>
+                                    <p>Title Goes here</p>
+                                </span>
                                 <input
                                     type="text"
                                     className={searchInputClasses.join(' ')}
+                                    style={{ display: displayStyle }}
                                     placeholder="Search ..." 
                                 />
-                            <div onClick = {this.toggleVisbility.bind(this)} className="fa fa-search searchIcon"></div>
+                            <div onClick = {this.toggleVisibility} className="fa fa-search searchIcon"></div>
                             </div>
                     );
                 }
