@@ -2,24 +2,89 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Search</title>
+        <title>Header</title>
         <!-- Script tags including React -->
-        <!-- <script src="./js/react.min.js"></script>
+        <script src="./js/react.min.js"></script>
         <script src="./js/react-dom.min.js"></script>
-        <script src="./js/babel.min.js"></script> -->
+        <script src="./js/babel.min.js"></script>
 
-        <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <!-- <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
         <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
         <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
 
     </head>
 
     <body>
         <div id="app"></div>
         <script type="text/babel">
+            const { PropTypes } = React;
+                
+            class SearchForm extends React.Component{ 
+                constructor(props){
+                    super(props);
+
+                    this.state = { 
+                        searchText: ''
+                    }
+
+                    this.updateSearchInput = this.updateSearchInput.bind(this);
+                    this.submitForm = this.submitForm.bind(this);
+                    
+                }
+
+                static propTypes = {
+                    onsubmit: PropTypes.func.isRequired, 
+                    searchVisible: PropTypes.bool,
+                }
+
+                static defaultProps = {
+                    onSubmit: () => {},
+                    searchVisible: false
+                }
+                
+
+                updateSearchInput(e){
+                    this.setState({
+                        visibility:this.state.visibility,
+                        searchText:e.target.value 
+                    });
+
+                }
+
+                submitForm(e){
+                    e.preventDefault();
+                    const {searchText} = this.state;
+
+                    this.props.onSubmit(searchText);
+                }
+                
+                render() {
+                    const { searchVisible } = this.props;
+                    let searchClasses = ['searchInput']
+
+                    if (searchVisible) {
+                        searchClasses.push('active')
+                    }
+
+                    return (
+                        <form onSubmit={this.submitForm.bind(this)}>
+                            <input
+                                type="search"
+                                className={searchClasses.join(' ')}
+                                onChange={this.updateSearchInput}
+                                placeholder="Search ..." />
+                        </form>
+                    );
+                }
+
+            }
+
+
+
+
             const mount = document.querySelector('#app');
-            class SearchBarToggle extends React.Component{ 
+            class Header extends React.Component{ 
                 constructor(props){
                     super(props);
 
@@ -48,24 +113,25 @@
                     return (
                         <div className="header" >
                             <div className="fa fa-more"></div>
-                                <span className="title">
-                                    <p>Title Goes here</p>
-                                </span>
-                                <input
-                                    type="text"
-                                    className={searchInputClasses.join(' ')}
-                                    style={{ display: displayStyle }}
-                                    placeholder="Search ..." 
-                                />
-                            <div onClick = {this.toggleVisibility} className="fa fa-search searchIcon"></div>
-                            </div>
+                            <span className="title" >
+                                <p>Title Goes here</p>
+                            </span>
+                            <div style = {{display: displayStyle}}>
+                            <SearchForm 
+                                searchVisiible = {this.state.visibility}
+                                onSubmit={this.props.onSubmit} 
+                            /> </div>
+                            <div onClick = {this.toggleVisibility} className="fa fa-search searchIcon">Boom</div>
+                        </div>
                     );
                 }
 
             }
 
             
-            ReactDOM.render(<SearchBarToggle />, mount);
+            ReactDOM.render(<Header />, mount);
+
+            
         </script>
     </body>
 </html>
