@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Header</title>
+        <!-- Script tags including React -->
+        <script src="./js/react.min.js"></script>
+        <script src="./js/react-dom.min.js"></script>
+        <script src="./js/babel.min.js"></script>
+
+        <!-- <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+
+    </head>
+
+    <body>
+        <div id="app"></div>
+        <script type="text/babel">
+            const { PropTypes } = React;
+
+// ****************************************************************************************************************************************\\
+            class SearchForm extends React.Component{ 
+                constructor(props){
+                    super(props);
+
+                    this.state = { 
+                        searchText: ''
+                    }
+
+                    this.updateSearchInput = this.updateSearchInput.bind(this);
+                    this.submitForm = this.submitForm.bind(this);
+                    
+                }
+
+                static propTypes = {
+                    onsubmit: PropTypes.func.isRequired, 
+                    searchVisible: PropTypes.bool,
+                }
+
+                static defaultProps = {
+                    onSubmit: () => {},
+                    searchVisible: false
+                }
+                
+
+                updateSearchInput(e){
+                    console.log("UpdateSEarchInput");
+                    this.setState({
+                        searchText:e.target.value 
+                    });
+
+                }
+
+                submitForm(e){
+                    console.log("submitForm");
+                    e.preventDefault();
+                    const {searchText} = this.state;
+
+                    this.props.onSubmit(searchText);
+                }
+                
+                render() {
+                    const { searchVisible } = this.props;
+                    let searchClasses = ['searchInput']
+
+                    if (searchVisible) {
+                        searchClasses.push('active')
+                    }
+
+                    return (
+                        <form onSubmit={this.submitForm}>
+                            <input
+                                type="search"
+                                className={searchClasses.join(' ')}
+                                onChange={this.updateSearchInput}
+                                placeholder="Search ..." />
+                        </form>
+                    );
+                }
+
+            }
+
+
+// ****************************************************************************************************************************************\\
+            class Header extends React.Component{ 
+                constructor(props){
+                    super(props);
+
+                    this.state = { 
+                        visibility: false
+                    }
+
+                    this.toggleVisibility = this.toggleVisibility.bind(this);
+                    
+                }
+
+                static propTypes = {
+                    onSearch: PropTypes.func.isRequired
+                }
+
+                toggleVisibility(){ 
+                    console.log("toggleVisibility");
+                    this.setState({
+                        visibility: !this.state.visibility
+                    });
+                }
+                
+                render(){ 
+                    const searchInputClasses = ["searchInput"];
+
+                    if (this.state.visibility) {
+                        searchInputClasses.push("active");
+                    }
+                    
+                    let displayStyle = this.state.visibility ? 'block' : 'none';
+                    return (
+                        <div className="header" >
+                            <div className="fa fa-more"></div>
+                            <span className="title" >
+                                <p>Title Goes here</p>
+                            </span>
+                            <div style = {{display: displayStyle}}>
+                            <SearchForm 
+                                
+                                searchVisible = {this.state.visibility}
+                                onSubmit={this.props.onSearch} 
+                            /> </div>
+                            <div onClick = {this.toggleVisibility} className="fa fa-search searchIcon">Boom</div>
+                        </div>
+                    );
+                }
+
+            }
+
+// ****************************************************************************************************************************************\\
+            class Panel extends React.Component{ 
+                constructor(props){
+                    super(props);
+
+                    this.state = {
+                        searchFilter : "",
+                        refreshing: false,
+                        activities: [],
+                        filtered: []
+
+                    }
+
+                    this.updateData = this.updateData.bind(this);
+                    this.handleSearch = this.handleSearch.bind(this);
+                }
+
+                handleSearch(filter){ 
+                    console.log("handleSearch");
+                    const {activities} = this.state;
+                    console.log(this.state.filtered);
+                    
+                    if (!filter){
+                        this.setState({
+                            filtered: activities
+                        });
+                        
+                    } else { 
+                        const filtered = activities.filter(activity => activity.invalid > 0)
+                        this.setState({
+                            filtered
+                        });
+                    }
+                    
+                }
+
+                updateData(){
+                    console.log("Update Data");
+                    this.setState({ loading: true });
+                
+                    fetch('https://api.apis.guru/v2/metrics.json')
+                        .then(response => response.json())
+                        .then(data => {
+                            
+                            this.setState({
+                                activities: [data],
+                                filtered: [data],
+                                loading: false
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error fetching data:', error);
+                            this.setState({ loading: false });
+                        });
+
+                }
+
+                componentDidMount() {
+                   this.updateData(); 
+                }
+
+                render(){
+                    const {filtered} = this.state;
+
+                    return (
+                        <div class="">
+                            <div className="title"> Activities</div>
+                            <ul>
+                                {filtered.map((activity) => (
+                                    <li > {activity.numAPIs} </li>
+                                ))}
+
+                            </ul>
+                            <Header onSearch={this.handleSearch}/>
+                        </div>
+                    );
+                }
+            }
+
+// ****************************************************************************************************************************************\\
+            const mount = document.querySelector('#app');            
+            ReactDOM.render(<Panel/>, mount);
+
+            
+        </script>
+    </body>
+</html>
