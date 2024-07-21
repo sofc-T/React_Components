@@ -1,39 +1,50 @@
+import './App.css';
 import React, {useState} from 'react';
-import PropTypes from 'prop-types';
+import TimeForm from './Time_Form';
 
-const timezones = ['GMT', 'MST', 'HST', 'EST', 'UTC'];
+function Time(){
+    const [time, setTime] = useState("");    
 
-export default function TimeForm({onTzChanged}){
-    const [tz, setTz] = useState(timezones[0]);
+  function getApiUrl(tz){
+    const host = 'http://worldtimeapi.org/api/';
+    console.log(tz);
+    return `${host}/${tz}`;
+  }
 
-    const tzChanged = function handleTzChanged(e){
-        const currentTz = e.target.value;
-        setTz(currentTz);
-        onTzChanged(currentTz);
+
+  async function fetchTime(tz){
+    const api = getApiUrl(tz);
+    console.log(api);
+    try {
+      const response = await fetch(api);
+      if (!response.ok){
+        throw new Error("Response was not okay")
+      }
+      const data = await response.json();
+      const time = data.datetime;
+      setTime(time);
+    } catch(e){
+      setTime( "Error Fetching Time.")
     }
+    }
+  
 
     
-        return( 
-            <div className='dropdown'>
-                {timezones.map(timezone => (
-                        <div key = {timezone}>
-                            <label>
-                                <input 
-                                    type='radio'
-                                    onChange = {tzChanged}
-                                    checked = {tz === timezone}
-                                    value = {timezone}
-                                    name = "timeZones"
-                                />
-                                    {timezone}
-                            </label>
-                            <br></br>
-                        </div>
-                ))}
-            </div>
+    return (
+      <div className="App">
+        <div className = "hor-box">
+          <img src="/logo192.png" alt="logo192"></img>
+          <p>What time is it?</p>
+        </div>
+        <div className='display-box'>
+          <div className='hor-box'>
+            <div className='time'> --- ---   {time}   --- --- </div>
+            <TimeForm onTzChanged={fetchTime} />
+          </div>          
+        </div>
+      </div>
     );
-};
-
-TimeForm.propTypes = { 
-    onTzChanged: PropTypes.func.isRequired,
 }
+
+
+export default Time;
